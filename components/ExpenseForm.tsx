@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MinusCircle, CreditCard, Type, Tag, Building2, User, Users, Sliders, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { IncomeFormData, CompanySplitType, CompanySplit } from '../types';
 
 interface ExpenseFormProps {
@@ -125,16 +125,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
     e.preventDefault();
     if (!title || !amount || selectedCategories.length === 0) return;
     
-    let companySplitData: CompanySplit | undefined = undefined;
-    if (isCompany) {
-      companySplitData = {
-        type: splitType,
-        robertPercent,
-        iustinPercent,
-        robertAmount: parseFloat(robertAmount) || 0,
-        iustinAmount: parseFloat(iustinAmount) || 0,
-      };
-    }
+    // The partner split is recorded for every expense, company or personal
+    const companySplitData: CompanySplit = {
+      type: splitType,
+      robertPercent,
+      iustinPercent,
+      robertAmount: parseFloat(robertAmount) || 0,
+      iustinAmount: parseFloat(iustinAmount) || 0,
+    };
 
     onAdd({ 
       title, 
@@ -272,7 +270,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
                 )}
               </div>
               <p className="text-xs text-zinc-400 mt-0.5">
-                Bifează dacă această cheltuială este deductibilă/achitată pe firmă și trebuie repartizată între asociați.
+                Bifează dacă această cheltuială este deductibilă/achitată pe firmă.
               </p>
             </div>
           </div>
@@ -289,19 +287,11 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
           </div>
         </div>
 
-        {/* Company Attribution & Split Controls */}
-        <AnimatePresence>
-          {isCompany && (
-            <motion.div
-              initial={{ opacity: 0, height: 0, marginTop: 0 }}
-              animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-              exit={{ opacity: 0, height: 0, marginTop: 0 }}
-              transition={{ duration: 0.25 }}
-              className="overflow-hidden bg-zinc-950/80 border border-rose-500/20 rounded-2xl p-5 md:p-6 space-y-5"
-            >
+        {/* Partner Attribution & Split Controls (company or personal) */}
+            <div className="mt-4 bg-zinc-950/80 border border-rose-500/20 rounded-2xl p-5 md:p-6 space-y-5">
               <div>
                 <label className="text-xs font-bold text-rose-400 uppercase tracking-wider block mb-3">
-                  Atribuire Cheltuială Firmă
+                  {isCompany ? 'Atribuire Cheltuială Firmă' : 'Atribuire Cheltuială (Robert / Iustin)'}
                 </label>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -479,7 +469,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
               {/* Real-time Split Preview Bar */}
               <div className="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800/80 space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-zinc-400 font-medium">Repartiție Cheltuială Firmă:</span>
+                  <span className="text-zinc-400 font-medium">{isCompany ? 'Repartiție Cheltuială Firmă:' : 'Repartiție Cheltuială:'}</span>
                   <span className="text-zinc-300 font-bold">
                     Robert: <strong className="text-blue-400">{parseFloat(robertAmount) || 0} lei ({robertPercent}%)</strong>
                     {' '}•{' '}
@@ -501,9 +491,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
                   />
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
       </div>
 
       <motion.button

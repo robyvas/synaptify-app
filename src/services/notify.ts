@@ -20,17 +20,17 @@ async function sendTelegramMessage(text: string) {
 }
 
 function ownershipLine(t: Transaction): string {
-  if (!t.isCompany) return '👤 Personal';
+  const base = t.isCompany ? '🏢 Pe Firmă' : '👤 Personal';
 
   const split = t.companySplit;
-  if (!split) return '🏢 Pe Firmă';
+  if (!split) return base;
 
-  if (split.type === 'robert') return '🏢 Pe Firmă (100% Robert)';
-  if (split.type === 'iustin') return '🏢 Pe Firmă (100% Iustin)';
+  if (split.type === 'robert') return `${base} (100% Robert)`;
+  if (split.type === 'iustin') return `${base} (100% Iustin)`;
   if (split.type === 'both' && split.robertPercent === 50 && split.iustinPercent === 50) {
-    return '🏢 Pe Firmă (50/50 Robert/Iustin)';
+    return `${base} (50/50 Robert/Iustin)`;
   }
-  return `🏢 Pe Firmă (Robert ${split.robertAmount} RON / Iustin ${split.iustinAmount} RON)`;
+  return `${base} (Robert ${split.robertAmount} RON / Iustin ${split.iustinAmount} RON)`;
 }
 
 export function notifyNewTransaction(t: Transaction) {

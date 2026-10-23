@@ -41,7 +41,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
         <AnimatePresence mode='popLayout'>
           {transactions.map((t, idx) => {
             const isExpense = t.type === 'expense';
-            const hasCompanySplit = t.isCompany && t.companySplit;
+            const hasCompanySplit = Boolean(t.companySplit);
             const split = t.companySplit;
 
             return (
